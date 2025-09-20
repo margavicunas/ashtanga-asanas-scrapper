@@ -1,4 +1,4 @@
-from scrapper import AshtangaAsanasScraper
+from src.scraping.scrapper import AshtangaAsanasScraper
 
 URL = "https://www.devvratyoga.com/learning-resources/ashtanga-yoga-asanas-with-names-images/"
 FOLDER_HINT_NAME = "uploads/2019/07/"

@@ -4,7 +4,8 @@ from PIL import Image
 from io import BytesIO
 import json
 import os
-from scrapper import AshtangaAsanasScraper, AsanaImageData
+from src.scraping.scrapper import AshtangaAsanasScraper
+from src.types.asana_types import AsanaImageData
 
 
 TEST_URL = "https://example.com/ashtanga"
@@ -16,6 +17,7 @@ def scraper(temp_output_dir: str) -> AshtangaAsanasScraper:
     return AshtangaAsanasScraper(
         url=TEST_URL, folder_hint_name=FOLDER_HINT, output_dir=temp_output_dir
     )
+
 
 class TestAshtangaAsanasScraper:
     def test_create_asana_id(self, scraper: AshtangaAsanasScraper) -> None:
@@ -45,7 +47,9 @@ class TestAshtangaAsanasScraper:
         assert scraper._get_asana_name(img_without_metadata) is None
 
     @responses.activate
-    def test_get_page_content(self, scraper: AshtangaAsanasScraper, mock_html_content: str) -> None:
+    def test_get_page_content(
+        self, scraper: AshtangaAsanasScraper, mock_html_content: str
+    ) -> None:
         """Test fetching webpage content."""
         responses.add(responses.GET, TEST_URL, body=mock_html_content, status=200)
 
@@ -85,7 +89,9 @@ class TestAshtangaAsanasScraper:
         assert scraper._download_image(test_url, "error-test") is None
 
     @responses.activate
-    def test_extract_asanas_images_data(self, scraper: AshtangaAsanasScraper, mock_html_content: str) -> None:
+    def test_extract_asanas_images_data(
+        self, scraper: AshtangaAsanasScraper, mock_html_content: str
+    ) -> None:
         """Test extraction of asana data from HTML content."""
         responses.add(
             responses.GET,
@@ -112,7 +118,9 @@ class TestAshtangaAsanasScraper:
             for key in ["id", "name", "img_url", "downloaded_img_path"]
         )
 
-    def test_export_data_to_json(self, scraper: AshtangaAsanasScraper, temp_output_dir: str) -> None:
+    def test_export_data_to_json(
+        self, scraper: AshtangaAsanasScraper, temp_output_dir: str
+    ) -> None:
         """Test JSON export functionality."""
         test_data: list[AsanaImageData] = [
             {

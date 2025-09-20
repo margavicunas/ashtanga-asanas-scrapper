@@ -6,15 +6,8 @@ from urllib.parse import urljoin
 from PIL import Image
 from io import BytesIO
 import logging
-from typing import TypedDict
+from src.types.asana_types import AsanaImageData
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
-
-class AsanaImageData(TypedDict):
-    id: str
-    name: str
-    img_url: str
-    downloaded_img_path: str | None
 
 
 DEFAULT_MAX_WORKERS = 4
