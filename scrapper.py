@@ -13,12 +13,7 @@ class AsanaImageData(TypedDict):
     id: str
     name: str
     img_url: str
-
-class DownloadedAsanaImageData(TypedDict):
-    id: str
-    name: str
-    path: str
-
+    downloaded_img_path: str | None
 
 class AshtangaAsanasScraper:
     def __init__(self, url: str, folder_hint_name: str, output_dir: str = "asanas"):
@@ -26,7 +21,7 @@ class AshtangaAsanasScraper:
         self.output_dir = output_dir
         self.folder_hint_name = folder_hint_name
         self.session = requests.Session()
-        self.downloaded_asana_images_data: list[DownloadedAsanaImageData] = []
+        self.asanas_images_data: list[AsanaImageData] = []
 
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
@@ -90,7 +85,12 @@ class AshtangaAsanasScraper:
 
             asana_id = self.create_asana_id(asana_name)
             img_url = urljoin(self.url, asana_img_src)
-            asanas_images_data.append(AsanaImageData(id=asana_id, name=asana_name, img_url=img_url))
+            downloaded_img_path = self.download_image(img_url, asana_id)
+            if not downloaded_img_path:
+                logging.error(f"Failed to download image for {asana_id}, skipping")
+                continue
+
+            asanas_images_data.append(AsanaImageData(id=asana_id, name=asana_name, img_url=img_url, downloaded_img_path=downloaded_img_path))
 
         return asanas_images_data
 
@@ -125,7 +125,7 @@ class AshtangaAsanasScraper:
         json_path = os.path.join(self.output_dir, "asanas.json")
         try:
             with open(json_path, "w", encoding="utf-8") as f:
-                json.dump(self.downloaded_asana_images_data, f, indent=2, ensure_ascii=False)
+                json.dump(self.asanas_images_data, f, indent=2, ensure_ascii=False)
             logging.info(f"Successfully exported data to {json_path}")
         except Exception as e:
             logging.error(f"Error exporting JSON data: {e}")
@@ -143,15 +143,6 @@ class AshtangaAsanasScraper:
         logging.info(
             f"Found {len(asanas_images_data)} asanas, will proceed to download and save them."
         )
-
-        for asana in asanas_images_data:
-            path = self.download_image(asana["img_url"], asana["id"])
-            if not path:
-                logging.error(f"Failed to download image for {asana['id']}, skipping")
-                continue
-
-            self.downloaded_asana_images_data.append(DownloadedAsanaImageData(id=asana["id"], name=asana["name"], path=path))
-
         self.export_data_to_json()
 
         logging.info("Scraping completed")
