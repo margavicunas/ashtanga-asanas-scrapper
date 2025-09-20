@@ -7,6 +7,8 @@ from PIL import Image
 from io import BytesIO
 import logging
 from typing import TypedDict
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from functools import partial
 
 
 class AsanaImageData(TypedDict):
@@ -15,13 +17,15 @@ class AsanaImageData(TypedDict):
     img_url: str
     downloaded_img_path: str | None
 
+
 class AshtangaAsanasScraper:
-    def __init__(self, url: str, folder_hint_name: str, output_dir: str = "asanas"):
+    def __init__(self, url: str, folder_hint_name: str, output_dir: str = "asanas", max_workers: int = 4):
         self.url = url
         self.output_dir = output_dir
         self.folder_hint_name = folder_hint_name
         self.session = requests.Session()
         self.asanas_images_data: list[AsanaImageData] = []
+        self.max_workers = max_workers
 
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
@@ -56,41 +60,61 @@ class AshtangaAsanasScraper:
         logging.error(f"No asana name found for {asana_img}, returning None")
         return None
 
-    def extract_asanas_images_data(self, html_content: str) -> list[AsanaImageData]:
-        """Extract asana names and image URLs from the page"""
-        if not html_content:
-            return []
-
-        soup = BeautifulSoup(html_content, "html.parser")
-        asanas_images_data: list[AsanaImageData] = []
-
-        for asana_img in soup.find_all(["img"]):
+    def extract_single_asana_image_data(self, asana_img: dict) -> AsanaImageData | None:
+        """Extract asana name and image URL from the image"""
+        try:
             asana_img_src = asana_img.get("src")
             if not asana_img_src:
                 logging.info(
                     f"Skipping {asana_img_src} because it doesn't contain an image. Who knows what this is."
                 )
-                continue
+                return None
 
             if self.folder_hint_name not in asana_img_src:
                 logging.info(
                     f"Skipping {asana_img_src} because it doesn't contain {self.folder_hint_name}. Probably not an asana image."
                 )
-                continue
+                return None
 
             asana_name = self.get_asana_name(asana_img)
             if not asana_name:
                 logging.error(f"No asana name found for {asana_img}, skipping")
-                continue
+                return None
 
             asana_id = self.create_asana_id(asana_name)
             img_url = urljoin(self.url, asana_img_src)
             downloaded_img_path = self.download_image(img_url, asana_id)
             if not downloaded_img_path:
                 logging.error(f"Failed to download image for {asana_id}, skipping")
-                continue
+                return None
+            return AsanaImageData(id=asana_id, name=asana_name, img_url=img_url, downloaded_img_path=downloaded_img_path)
 
-            asanas_images_data.append(AsanaImageData(id=asana_id, name=asana_name, img_url=img_url, downloaded_img_path=downloaded_img_path))
+        except Exception as e:
+            logging.error(f"Error processing asana image: {e}")
+            return None
+
+    def extract_asanas_images_data(self, html_content: str) -> list[AsanaImageData]:
+        """Extract asana names and image URLs from the page using parallel processing"""
+        if not html_content:
+            return []
+
+        soup = BeautifulSoup(html_content, "html.parser")
+        asana_images = soup.find_all(["img"])
+        asanas_images_data: list[AsanaImageData] = []
+
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            future_to_asana = {
+                executor.submit(self.extract_single_asana_image_data, img): img
+                for img in asana_images
+            }
+
+            for future in as_completed(future_to_asana):
+                try:
+                    asana_data = future.result()
+                    if asana_data:
+                        asanas_images_data.append(asana_data)
+                except Exception as e:
+                    logging.error(f"Error processing future: {e}")
 
         return asanas_images_data
 
@@ -143,6 +167,7 @@ class AshtangaAsanasScraper:
         logging.info(
             f"Found {len(asanas_images_data)} asanas, will proceed to download and save them."
         )
+        self.asanas_images_data = asanas_images_data
         self.export_data_to_json()
 
         logging.info("Scraping completed")
