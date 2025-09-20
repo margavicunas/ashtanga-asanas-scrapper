@@ -96,6 +96,7 @@ class AshtangaAsanasScraper:
         Returns:
             The URL-friendly ID as a string.
         """
+        name = "-".join(word for word in name.split() if word)
         return "".join(
             c.lower() for c in name if c.isalnum() or c in ("-", "_")
         ).strip()
