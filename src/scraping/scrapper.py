@@ -9,24 +9,24 @@ import logging
 from src.types.asana_types import AsanaImageData
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-
 DEFAULT_MAX_WORKERS = 4
-
+DEVVYOGA_URL = "https://www.devvratyoga.com/learning-resources/ashtanga-yoga-asanas-with-names-images/"
+DEVVYOGA_FOLDER_HINT_NAME = "uploads/2019/07/"
 
 class AshtangaAsanasScraper:
     def __init__(
         self,
         url: str,
         folder_hint_name: str,
-        output_dir: str = "asanas",
+        output_dir: str = "data/asanas",
         max_workers: int = DEFAULT_MAX_WORKERS,
     ):
         """
         Initialize the scraper with the target URL and configuration.
 
         Args:
-            url: The URL of the page to scrape.
-            folder_hint_name: The hint name of the folder where the asanas images are located.
+            url: The URL of the page to scrape. Defaults to DEVVYOGA_URL.
+            folder_hint_name: The hint name of the folder where the asanas images are located. Defaults to DEVVYOGA_FOLDER_HINT_NAME.
             output_dir: The directory to save the asanas images.
             max_workers: The maximum number of workers to use for parallel processing.
         """
@@ -56,11 +56,7 @@ class AshtangaAsanasScraper:
             logging.error("Failed to get page content")
             return
 
-        asanas_images_data = self._extract_asanas_images_data(html_content)
-        logging.info(
-            f"Found {len(asanas_images_data)} asanas, will proceed to download and save them."
-        )
-        self.asanas_images_data = asanas_images_data
+        self.asanas_images_data = self._extract_asanas_images_data(html_content)
         self._export_data_to_json()
 
         logging.info("Scraping completed")
