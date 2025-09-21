@@ -1,5 +1,6 @@
 import argparse
 from src.scraping.scrapper import AshtangaAsanasScraper, DEVVYOGA_URL, DEVVYOGA_FOLDER_HINT_NAME
+from src.processing.processor import AsanaProcessor
 
 
 def main() -> None:
@@ -14,6 +15,15 @@ def main() -> None:
     scraper_parser.add_argument(
         "--max-workers", type=int, default=4, help="Maximum number of workers. Defaults to 4."
     )
+
+    # Processor command
+    processor_parser = subparsers.add_parser(
+        "process", help="Process asanas to add similar poses"
+    )
+    processor_parser.add_argument("--input_file", default="data/asanas/asanas.json", help="Path to input JSON file. Defaults to data/asanas/asanas.json.")
+    processor_parser.add_argument("--output-file", default=None, help="Path to output JSON file. Defaults to input_file with _processed suffix.")
+    processor_parser.add_argument(
+        "--max-similar", type=int, default=4, help="Maximum number of similar poses. Defaults to 4."
     )
 
     args = parser.parse_args()
@@ -26,6 +36,9 @@ def main() -> None:
             folder_hint_name=DEVVYOGA_FOLDER_HINT_NAME,
         )
         scraper.scrape_and_export_asanas()
+    elif args.command == "process":
+        processor = AsanaProcessor(max_similar=args.max_similar)
+        processor.process_asanas(args.input_file, args.output_file)
     else:
         parser.print_help()
 
