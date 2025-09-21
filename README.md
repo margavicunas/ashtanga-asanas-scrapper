@@ -66,12 +66,29 @@ The scraper generates an `asanas.json` file:
   {
     "id": "asana-name",
     "name": "Asana Name",
-    "img": "/path/to/image.png"
+    "img_url": "Original image URL",
+    "downloaded_img_path": "/path/to/image.png"
   }
 ]
 ```
 
 After processing, you'll get an enhanced `asanas_processed.json` with similar asanas!
+
+```json
+[
+  {
+    "id": "asana-name",
+    "name": "Asana Name",
+    "img_url": "Original image URL",
+    "downloaded_img_path": "/path/to/image.png"
+    "similar_asanas": [
+      "similar-asana-1",
+      "similar-asana-2",
+      "similar-asana-3"
+    ]
+  }
+]
+```
 
 ## Development
 
