@@ -1,5 +1,9 @@
 import argparse
-from src.scraping.scrapper import AshtangaAsanasScraper, DEVVYOGA_URL, DEVVYOGA_FOLDER_HINT_NAME
+from src.scraping.scrapper import (
+    AshtangaAsanasScraper,
+    DEVVYOGA_URL,
+    DEVVYOGA_FOLDER_HINT_NAMES,
+)
 from src.processing.processor import AsanaProcessor
 
 
@@ -33,7 +37,7 @@ def main() -> None:
             output_dir=args.output_dir,
             max_workers=args.max_workers,
             url=DEVVYOGA_URL,
-            folder_hint_name=DEVVYOGA_FOLDER_HINT_NAME,
+            folder_hint_names=DEVVYOGA_FOLDER_HINT_NAMES,
         )
         scraper.scrape_and_export_asanas()
     elif args.command == "process":

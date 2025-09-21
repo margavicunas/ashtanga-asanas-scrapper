@@ -11,13 +11,14 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 DEFAULT_MAX_WORKERS = 4
 DEVVYOGA_URL = "https://www.devvratyoga.com/learning-resources/ashtanga-yoga-asanas-with-names-images/"
-DEVVYOGA_FOLDER_HINT_NAME = "uploads/2019/07/"
+DEVVYOGA_FOLDER_HINT_NAMES = ["uploads/2019/07/", "uploads/2019/08/"]
+
 
 class AshtangaAsanasScraper:
     def __init__(
         self,
         url: str,
-        folder_hint_name: str,
+        folder_hint_names: list[str],
         output_dir: str = "data/asanas",
         max_workers: int = DEFAULT_MAX_WORKERS,
     ):
@@ -26,19 +27,23 @@ class AshtangaAsanasScraper:
 
         Args:
             url: The URL of the page to scrape. Defaults to DEVVYOGA_URL.
-            folder_hint_name: The hint name of the folder where the asanas images are located. Defaults to DEVVYOGA_FOLDER_HINT_NAME.
-            output_dir: The directory to save the asanas images.
+            folder_hint_name: The hint name of the folder where the asanas images are located. Defaults to DEVVYOGA_FOLDER_HINT_NAMES.
+            output_dir: The directory to save the asanas json file and the images folder.
             max_workers: The maximum number of workers to use for parallel processing.
         """
         self.url = url
+        self.folder_hint_names = folder_hint_names
         self.output_dir = output_dir
-        self.folder_hint_name = folder_hint_name
+        self.images_output_dir = os.path.join(self.output_dir, "images")
         self.session = requests.Session()
         self.asanas_images_data: list[AsanaImageData] = []
         self.max_workers = max_workers
 
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
+
+        if not os.path.exists(self.images_output_dir):
+            os.makedirs(self.images_output_dir)
 
         logging.basicConfig(
             level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -130,9 +135,12 @@ class AshtangaAsanasScraper:
                 )
                 return None
 
-            if self.folder_hint_name not in asana_img_src:
+            if not any(
+                folder_hint_name in asana_img_src
+                for folder_hint_name in self.folder_hint_names
+            ):
                 logging.info(
-                    f"Skipping {asana_img_src} because it doesn't contain {self.folder_hint_name}. Probably not an asana image."
+                    f"Skipping {asana_img_src} because it doesn't contain any of the folder hint names {self.folder_hint_names}. Probably not an asana image."
                 )
                 return None
 
@@ -206,7 +214,7 @@ class AshtangaAsanasScraper:
             response.raise_for_status()
 
             filename = f"{asana_id}.png"
-            filepath = os.path.join(self.output_dir, filename)
+            filepath = os.path.join(self.images_output_dir, filename)
 
             img = Image.open(BytesIO(response.content))
 

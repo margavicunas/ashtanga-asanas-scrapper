@@ -9,13 +9,13 @@ from src.types.asana_types import AsanaImageData
 
 
 TEST_URL = "https://example.com/ashtanga"
-FOLDER_HINT = "uploads/2019/07"
+FOLDER_HINT = ["uploads/2019/07"]
 
 
 @pytest.fixture
 def scraper(temp_output_dir: str) -> AshtangaAsanasScraper:
     return AshtangaAsanasScraper(
-        url=TEST_URL, folder_hint_name=FOLDER_HINT, output_dir=temp_output_dir
+        url=TEST_URL, folder_hint_names=FOLDER_HINT, output_dir=temp_output_dir
     )
 
 
