@@ -1,20 +1,22 @@
 # Ashtanga Primary Series Scraper 🧘‍♀️
 
-A Python scraper that collects and organizes images and names of asanas from the Ashtanga Yoga Primary Series. This tool helps practitioners and teachers easily access a comprehensive collection of asana references.
+A Python tool that not only collects asana images from the Ashtanga Yoga Primary Series but also helps you find similar poses by name! Specially useful for studying the sequence offline.
 
 ## Purpose
 
-This project was created to compile a structured dataset of Ashtanga Primary Series asanas, making it easier to:
-- Reference asana names and their corresponding images
-- Study the sequence offline
-- Have a local backup of the asana references
+This project makes learning and referencing Ashtanga Primary Series easier by:
+- Creating a structured dataset of asanas with their images
+- Finding similar poses to help understand pose relationships
+- Making it simple to study the sequence offline
+- Providing a local backup of asana references
 
 ## Features
 
-- Downloads all asana images from the primary series
-- Creates a structured JSON file with asana names and image paths
-- Handles image format conversion automatically
-- Includes proper error handling and logging
+- 📸 Downloads all asana images from the primary series
+- 🔄 Processes asanas to find similar poses
+- 📝 Creates structured JSON files with asana details
+- 🛠️ Includes proper error handling and logging
+- 🚀 Uses parallel processing for faster downloads
 
 ## Installation
 
@@ -31,15 +33,34 @@ pip install -r requirements.txt
 
 ## Usage
 
-Run the scraper:
+The tool has two main commands: `scrape` and `process`.
+
+### Scraping Asanas
+
+To download all asana images and create the initial dataset:
 ```bash
-python main.py
+python main.py scrape [--output-dir data/asanas] [--max-workers 4]
 ```
 
-The script will:
-1. Create an `asanas` directory
-2. Download all asana images
-3. Generate an `asanas.json` file with the following structure:
+Options:
+- `--output-dir`: Where to save images and data (default: data/asanas)
+- `--max-workers`: Number of parallel downloads (default: 4)
+
+### Processing Asanas
+
+To analyze asanas and find similar poses:
+```bash
+python main.py process [--input_file data/asanas/asanas.json] [--output-file output.json] [--max-similar 4]
+```
+
+Options:
+- `--input_file`: Path to the scraped asanas JSON (default: data/asanas/asanas.json)
+- `--output-file`: Where to save processed results (default: adds '_processed' suffix to input file)
+- `--max-similar`: Maximum number of similar poses to find (default: 4)
+
+### Output Format
+
+The scraper generates an `asanas.json` file:
 ```json
 [
   {
@@ -49,6 +70,8 @@ The script will:
   }
 ]
 ```
+
+After processing, you'll get an enhanced `asanas_processed.json` with similar poses!
 
 ## Development
 
