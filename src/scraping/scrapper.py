@@ -105,12 +105,10 @@ class AshtangaAsanasScraper:
         Returns:
             The asana name as a string or None if no name is found.
         """
-        if asana_img.get("title"):
-            return asana_img.get("title")
-        if asana_img.get("alt"):
-            return asana_img.get("alt")
-        if asana_img.get("src"):
-            return str(asana_img.get("src")).split("/")[-1].split(".")[0]
+        for field in ["title", "alt", "src"]:
+            if value := asana_img.get(field):
+                name = str(value).split("/")[-1].split(".")[0] if field == "src" else value
+                return name.replace("-", " ").title()
         logging.error(f"No asana name found for {asana_img}, returning None")
         return None
 
