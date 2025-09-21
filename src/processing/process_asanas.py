@@ -5,6 +5,7 @@ from src.types.asana_types import AsanaImageData, ProcessedAsana
 
 EXTRA_BOOST_SIMILARITY_RATIO = 0.2
 
+
 def load_asanas(file_path: str) -> List[AsanaImageData]:
     """Load asanas from JSON file."""
     with open(file_path, "r") as f:
@@ -40,7 +41,9 @@ def find_similar_asanas(
     return [asana_id for _, asana_id in similarities[:max_similar]]
 
 
-def process_asanas(input_file: str = "asanas.json", output_file: str = "asanas_processed.json") -> None:
+def process_asanas(
+    input_file: str = "asanas.json", output_file: str = "asanas_processed.json"
+) -> None:
     """Process asanas to add similar poses."""
     asanas = load_asanas(input_file)
 
