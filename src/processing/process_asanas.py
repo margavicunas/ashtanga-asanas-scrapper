@@ -44,7 +44,7 @@ def find_similar_asanas(
 def process_asanas(
     input_file: str = "asanas.json", output_file: str = "asanas_processed.json"
 ) -> None:
-    """Process asanas to add similar poses."""
+    """Process asanas to add similar asanas."""
     asanas = load_asanas(input_file)
 
     processed_asanas = []
@@ -54,7 +54,7 @@ def process_asanas(
             name=asana["name"],
             img_url=asana["img_url"],
             downloaded_img_path=asana["downloaded_img_path"],
-            similar_poses=find_similar_asanas(asana, asanas),
+            similar_asanas=find_similar_asanas(asana, asanas),
         )
         processed_asanas.append(processed_asana)
 

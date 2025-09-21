@@ -11,10 +11,10 @@ class AsanaImageData(TypedDict):
 
 
 class ProcessedAsana(TypedDict):
-    """Asana data with similar poses information"""
+    """Asana data with similar asanas ids"""
 
     id: str
     name: str
     img_url: str
     downloaded_img_path: str
-    similar_poses: List[str]
+    similar_asanas: List[str]

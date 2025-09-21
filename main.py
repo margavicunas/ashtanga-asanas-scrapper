@@ -29,7 +29,7 @@ def main() -> None:
 
     # Processor command
     processor_parser = subparsers.add_parser(
-        "process", help="Process asanas to add similar poses"
+        "process", help="Process asanas to add similar asanas"
     )
     processor_parser.add_argument(
         "--input_file",
@@ -45,7 +45,7 @@ def main() -> None:
         "--max-similar",
         type=int,
         default=4,
-        help="Maximum number of similar poses. Defaults to 4.",
+        help="Maximum number of similar asanas. Defaults to 4.",
     )
 
     args = parser.parse_args()

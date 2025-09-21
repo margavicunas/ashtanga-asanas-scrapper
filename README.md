@@ -1,19 +1,19 @@
 # Ashtanga Primary Series Scraper 🧘‍♀️
 
-A Python tool that not only collects asana images from the Ashtanga Yoga Primary Series but also helps you find similar poses by name! Specially useful for studying the sequence offline.
+A Python tool that not only collects asana images from the Ashtanga Yoga Primary Series but also helps you find similar asanas by name! Specially useful for studying the sequence offline.
 
 ## Purpose
 
 This project makes learning and referencing Ashtanga Primary Series easier by:
 - Creating a structured dataset of asanas with their images
-- Finding similar poses to help understand pose relationships
+- Finding similar asanas to help understand pose relationships
 - Making it simple to study the sequence offline
 - Providing a local backup of asana references
 
 ## Features
 
 - 📸 Downloads all asana images from the primary series
-- 🔄 Processes asanas to find similar poses
+- 🔄 Processes asanas to find similar asanas
 - 📝 Creates structured JSON files with asana details
 - 🛠️ Includes proper error handling and logging
 - 🚀 Uses parallel processing for faster downloads
@@ -48,7 +48,7 @@ Options:
 
 ### Processing Asanas
 
-To analyze asanas and find similar poses:
+To analyze asanas and find similar asanas:
 ```bash
 python main.py process [--input_file data/asanas/asanas.json] [--output-file output.json] [--max-similar 4]
 ```
@@ -56,7 +56,7 @@ python main.py process [--input_file data/asanas/asanas.json] [--output-file out
 Options:
 - `--input_file`: Path to the scraped asanas JSON (default: data/asanas/asanas.json)
 - `--output-file`: Where to save processed results (default: adds '_processed' suffix to input file)
-- `--max-similar`: Maximum number of similar poses to find (default: 4)
+- `--max-similar`: Maximum number of similar asanas to find (default: 4)
 
 ### Output Format
 
@@ -71,7 +71,7 @@ The scraper generates an `asanas.json` file:
 ]
 ```
 
-After processing, you'll get an enhanced `asanas_processed.json` with similar poses!
+After processing, you'll get an enhanced `asanas_processed.json` with similar asanas!
 
 ## Development
 
@@ -96,4 +96,4 @@ All asana images and references are sourced from [Devvrat Yoga](https://www.devv
 
 ## License
 
-This project is for educational purposes only. All asana images belong to their respective owners.
+This project is for educational purasanas only. All asana images belong to their respective owners.

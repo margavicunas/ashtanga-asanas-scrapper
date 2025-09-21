@@ -10,12 +10,12 @@ class AsanaProcessor:
         """Initialize the processor with configuration.
 
         Args:
-            max_similar: Maximum number of similar poses to find for each asana.
+            max_similar: Maximum number of similar asanas to find for each asana.
         """
         self.max_similar = max_similar
 
     def process_asanas(self, input_file: str, output_file: str | None = None) -> None:
-        """Process asanas to add similar poses.
+        """Process asanas to add similar asanas.
 
         Args:
             input_file: Path to input JSON file containing scraped asanas.
@@ -65,7 +65,7 @@ class AsanaProcessor:
             base_name = target_name.split("-")[0]
             other_base = asana["name"].lower().split("-")[0]
             if base_name == other_base:
-                similarity += 0.2  # Boost similarity for poses with same base name
+                similarity += 0.2  # Boost similarity for asanas with same base name
 
             similarities.append((similarity, asana["id"]))
 
@@ -74,17 +74,17 @@ class AsanaProcessor:
         return [asana_id for _, asana_id in similarities[: self.max_similar]]
 
     def _process_asanas(self, asanas: List[AsanaImageData]) -> List[ProcessedAsana]:
-        """Process each asana to add similar poses."""
+        """Process each asana to add similar asanas."""
         processed: List[ProcessedAsana] = []
 
         for asana in asanas:
-            similar_poses = self._find_similar_asanas(asana, asanas)
+            similar_asanas = self._find_similar_asanas(asana, asanas)
             processed_asana = ProcessedAsana(
                 id=asana["id"],
                 name=asana["name"],
                 img_url=asana["img_url"],
                 downloaded_img_path=asana["downloaded_img_path"],
-                similar_poses=similar_poses,
+                similar_asanas=similar_asanas,
             )
             processed.append(processed_asana)
 
